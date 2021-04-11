@@ -1,4 +1,5 @@
 ﻿using System;
+using VGAudio.Utilities;
 using static VGAudio.Codecs.GcAdpcm.GcAdpcmMath;
 
 namespace VGAudio.Containers.Dsp
@@ -50,5 +51,11 @@ namespace VGAudio.Containers.Dsp
         /// this number. Default is 1.
         /// </summary>
         public int LoopPointAlignment { get; set; } = 1;
+
+        /// <summary>
+        /// Set <see cref="Endianness"/>.
+        /// Default is BigEndian.
+        /// </summary>
+        public Endianness Endianness { get; set; } = Endianness.BigEndian;
     }
 }

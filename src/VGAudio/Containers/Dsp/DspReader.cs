@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using VGAudio.Formats;
 using VGAudio.Formats.GcAdpcm;
@@ -12,11 +13,32 @@ namespace VGAudio.Containers.Dsp
     {
         private static int HeaderSize => 0x60;
 
+        protected override DspConfiguration GetConfiguration(DspStructure structure)
+        {
+            var config = base.GetConfiguration(structure);
+            config.Endianness = structure.Endianness;
+            return config;
+        }
+
         protected override DspStructure ReadFile(Stream stream, bool readAudioData = true)
         {
-            using (BinaryReader reader = GetBinaryReader(stream, Endianness.BigEndian))
+            //Detect endian
+            var sampleRateBytes = new byte[4];
+            long position = stream.Position;
+            stream.Seek(8, SeekOrigin.Current);
+            stream.Read(sampleRateBytes, 0, 4);
+            stream.Position = position;
+
+            var sampleRate = BitConverter.ToInt32(sampleRateBytes, 0);
+            var endian = Endianness.BigEndian;
+            if (sampleRate != 0)
             {
-                var structure = new DspStructure();
+                endian = BitConverter.IsLittleEndian ^ (sampleRate > 0) ? Endianness.BigEndian : Endianness.LittleEndian;
+            }
+
+            using (BinaryReader reader = GetBinaryReader(stream, endian))
+            {
+                var structure = new DspStructure {Endianness = endian};
 
                 ReadHeader(reader, structure);
 
@@ -75,7 +97,7 @@ namespace VGAudio.Containers.Dsp
                 reader.BaseStream.Position = HeaderSize * i + 0x1c;
                 var channel = new GcAdpcmChannelInfo
                 {
-                    Coefs = Enumerable.Range(0, 16).Select(x => reader.ReadInt16()).ToArray(),
+                    Coefs = Enumerable.Range(0, 16).Select(x => reader.ReadInt16()).ToArray(), //endian correct
                     Gain = reader.ReadInt16(),
                     Start = new GcAdpcmContext(reader),
                     Loop = new GcAdpcmContext(reader)

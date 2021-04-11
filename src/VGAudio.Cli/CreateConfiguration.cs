@@ -10,6 +10,7 @@ using VGAudio.Containers.Idsp;
 using VGAudio.Containers.NintendoWare;
 using VGAudio.Containers.Opus;
 using VGAudio.Containers.Wave;
+using VGAudio.Utilities;
 
 namespace VGAudio.Cli
 {
@@ -44,6 +45,11 @@ namespace VGAudio.Cli
                     throw new InvalidDataException("Can't use format PCM16 with DSP files");
                 case AudioFormat.Pcm8:
                     throw new InvalidDataException("Can't use format PCM8 with DSP files");
+            }
+
+            if (options.Endianness != null)
+            {
+                config.Endianness = options.Endianness.Value;
             }
 
             if (options.LoopAlignment > 0)

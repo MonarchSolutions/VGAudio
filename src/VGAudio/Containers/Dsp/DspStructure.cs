@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using VGAudio.Codecs.GcAdpcm;
 using VGAudio.Formats.GcAdpcm;
+using VGAudio.Utilities;
 
 namespace VGAudio.Containers.Dsp
 {
@@ -10,6 +11,8 @@ namespace VGAudio.Containers.Dsp
     public class DspStructure
     {
         internal DspStructure() { }
+
+        public Endianness Endianness { get; set; } = Endianness.BigEndian;
 
         /// <summary>
         /// The number of samples in the DSP.

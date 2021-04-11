@@ -43,7 +43,7 @@ namespace VGAudio.Containers.Dsp
         {
             //RecalculateData();
 
-            using (BinaryWriter writer = GetBinaryWriter(stream, Endianness.BigEndian))
+            using (BinaryWriter writer = GetBinaryWriter(stream, Configuration.Endianness))
             {
                 stream.Position = 0;
                 WriteHeader(writer);
@@ -65,7 +65,8 @@ namespace VGAudio.Containers.Dsp
                 writer.Write(StartAddr);
                 writer.Write(EndAddr);
                 writer.Write(CurAddr);
-                writer.Write(channel.Coefs.ToByteArray(Endianness.BigEndian));
+                //writer.Write(channel.Coefs.ToByteArray(Endianness.BigEndian));
+                writer.Write(channel.Coefs.ToByteArray(Configuration.Endianness));
                 writer.Write(channel.Gain);
                 channel.StartContext.Write(writer);
                 if (Adpcm.Looping)
